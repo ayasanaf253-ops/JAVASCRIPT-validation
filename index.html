@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulaire d'inscription</title>
+    <style>
+.error-border{
+    border: 2px solid red;
+}
+
+.error{
+    color: red;
+    font-size: 14px;
+}
+</style>
+</head>
+<body>
+
+    <h2>Formulaire d'inscription</h2>
+
+    <form action="inscription.php" method="POST" id="formulaire" novalidate>
+
+        <label for="nom">Nom :</label><br>
+        <input type="text" id="nom" name="nom" required>
+        <div class="error" id="error-nom"></div><br><br>
+
+        <label for="prenom">Prénom :</label><br>
+        <input type="text" id="prenom" name="prenom" required>
+        <div class="error" id="error-prenom"></div><br><br>
+
+        <label for="email">Email :</label><br>
+        <input type="email" id="email" name="email" required>
+        <div class="error" id="error-email"></div><br><br>
+
+        <label for="password">Mot de passe :</label><br>
+        <input type="password" id="password" name="password" minlength="6" required>
+        <div class="error" id="error-password"></div><br><br>
+
+        <label for="date">Date de naissance :</label><br>
+        <input type="date" id="naissance" name="date">
+        <div class="error" id="error-naissance"></div><br><br>
+
+        <label>Genre :</label><br>
+        <input type="radio" name="sexe" value="Homme"> Homme
+        <input type="radio" name="sexe" value="Femme"> Femme
+        <div class="error" id="error-sexe"></div><br><br><br>
+
+        <label>Ville :</label><br>
+        <select name="ville" id="villes" required>
+            <option value="" disabled selected>-- Choisir une ville --</option>
+            <option value="Marrakech">Marrakech</option>
+            <option value="Casablanca">Casablanca</option>
+            <option value="Rabat">Rabat</option>
+        </select>
+        <div class="error" id="error-ville"></div><br><br>
+
+        <label>
+            <input type="checkbox" name="conditions" id="conditions" required>
+            J'accepte les conditions d'utilisation
+        </label>
+        <div class="error" id="error-conditions"></div><br><br>
+
+        <button type="submit" id="btn_inscrire">S'inscrire</button>
+        <button type="reset">Annuler</button>
+
+    </form>
+    
+    <table border="1" id="tableUsers">
+<tr>
+<th>Nom</th>
+<th>Prénom</th>
+<th>Email</th>
+<th>Mot de passe</th>
+<th>Date</th>
+<th>Sexe</th>
+<th>Ville</th>
+</tr>
+<tbody id="table_body"></tbody>
+</table>
+
+    <script>
+        const form = document.getElementById("formulaire");
+
+        const nom = document.getElementById("nom");
+const prenom = document.getElementById("prenom");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const naissance = document.getElementById("naissance");
+
+function verifier(input, errorId, message) {
+const error = document.getElementById(errorId);
+
+function check() {
+if (input.value.trim() === "") {
+error.textContent = message;
+input.classList.add("error-border");
+return false;
+} else {
+error.textContent = "";
+input.classList.remove("error-border");
+return true;
+}
+}
+
+input.addEventListener("blur", check);
+input.addEventListener("keyup", check);
+
+input.addEventListener("mouseover", () => {
+input.style.backgroundColor = "#f5f5f5";
+});
+
+input.addEventListener("mouseout", () => {
+input.style.backgroundColor = "";
+});
+
+return check;
+}
+
+const vNom = verifier(nom, "error-nom", "Nom obligatoire");
+const vPrenom = verifier(prenom, "error-prenom", "Prénom obligatoire");
+const vEmail = verifier(email, "error-email", "Email obligatoire");
+const vPassword = verifier(password, "error-password", "Mot de passe obligatoire");
+const vNaissance = verifier(naissance, "error-naissance", "Date obligatoire");
+
+form.addEventListener("submit", function(e) {
+e.preventDefault();
+
+document.querySelectorAll(".error").forEach(el => el.textContent = "");
+
+let valid =
+vNom() &&
+vPrenom() &&
+vEmail() &&
+vPassword() &&
+vNaissance();
+
+const sexe = document.querySelector("input[name='sexe']:checked");
+const ville = document.getElementById("villes");
+const conditions = document.getElementById("conditions");
+
+if (!sexe) {
+document.getElementById("error-sexe").textContent = "Choisir un sexe";
+valid = false;
+}
+
+if (ville.value === "") {
+document.getElementById("error-ville").textContent = "Choisir une ville";
+valid = false;
+}
+
+if (!conditions.checked) {
+document.getElementById("error-conditions").textContent = "Accepter les conditions";
+valid = false;
+}
+
+// Si tout est correct, afficher le résultat
+
+
+if(valid){
+
+let user = {
+nom : nom.value,
+prenom : prenom.value,
+email : email.value,
+password : password.value,
+date : naissance.value,
+sexe : sexe.value,
+ville : ville.value
+};
+
+utilisateurs.push(user);
+afficher();
+
+
+}
+
+
+});
+
+var btn_inscr = document.getElementById("btn_inscrire")
+var table_body = document.getElementById('table_body')
+var utilisateurs = [];
+
+function afficher(){
+
+table_body.innerHTML = "";
+
+utilisateurs.forEach(function(u){
+
+let ligne = `<tr>
+<td>${u.nom}</td>
+<td>${u.prenom}</td>
+<td>${u.email}</td>
+<td>${u.password}</td>
+<td>${u.date}</td>
+<td>${u.sexe}</td>
+<td>${u.ville}</td>
+</tr>`;
+
+table_body.insertAdjacentHTML("beforeend",ligne);
+
+});
+
+}
+    </script>
+
+</body>
+</html>
